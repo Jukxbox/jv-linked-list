@@ -36,37 +36,34 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
 
     @Override
     public void add(T value, int index) {
-        checkPositionIndex(index);
+        checkPositionIndex(index); // Ensures index is in [0, size]
         Node<T> newNode = new Node<>(null, value, null);
         if (index == 0) {
-            if (head == null) { // Empty list
+            if (head == null) { // Empty list: set head and tail
                 head = newNode;
                 tail = newNode;
-            } else {
+            } else { // Insert at head: update links
                 newNode.next = head;
                 head.prev = newNode;
                 head = newNode;
             }
-        } else if (index == size) {
+        } else if (index == size) { // Insert at tail
             newNode.prev = tail;
             tail.next = newNode;
             tail = newNode;
-        } else {
-            Node<T> current = getNodeAt(index);
-            Node<T> previous = current.prev;
+        } else { // Insert in the middle (index > 0 and index < size)
+            Node<T> current = getNodeAt(index); // Current node at index
+            Node<T> previous = current.prev; // Safe: index > 0, so current is not head
             newNode.next = current;
             newNode.prev = previous;
             previous.next = newNode;
             current.prev = newNode;
-
         }
         size++;
     }
 
     private Node<T> getNodeAt(int ind) {
-        if (ind < 0 || ind >= size) {
-            return null;
-        }
+        checkElementIndex(ind);
         Node<T> current = head;
         for (int i = 0; i < ind; i++) {
             current = current.next;
@@ -92,13 +89,8 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
 
     @Override
     public T get(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException(index);
-        }
-        Node<T> current = head;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
-        }
+        checkElementIndex(index);
+        Node<T> current = getNodeAt(index);
         return current.value;
     }
 
@@ -116,7 +108,7 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
 
     private void checkElementIndex(int index) {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Invalid index for set: " + index);
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
         }
     }
 
